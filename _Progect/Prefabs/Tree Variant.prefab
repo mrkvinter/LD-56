@@ -179,7 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d91239ca57e4c8f9198e66f855d6a69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cooldown: 0.5
   messageTextPrefab: {fileID: 411120176429018191}
   messageTextParent: {fileID: 810243601993557878}
+  cooldown: 0.25
   visual: {fileID: 868917798483424354}

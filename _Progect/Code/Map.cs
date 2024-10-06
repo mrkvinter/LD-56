@@ -11,6 +11,7 @@ namespace Code
 
         private MapCell currentCell;
         private bool isBusy;
+        private bool isHidden;
 
         private void Start()
         {
@@ -22,12 +23,18 @@ namespace Code
             }
 
             currentCell = GetCell(startCellPosition);
+            GameManager.Instance.MapController.HideAsync().Forget();
+            isHidden = true;
+        }
+
+        public void ShowStartCell()
+        {
             ChangeAsync(currentCell).Forget();
         }
 
         private void Update()
         {
-            if (isBusy)
+            if (isBusy || GameManager.Instance.GameCameraController.IsLookAtDeck || !GameManager.Instance.IsPlaying)
                 return;
 
             if (Input.GetKeyDown(KeyCode.W))
@@ -58,6 +65,14 @@ namespace Code
             ChangeAsync(newCell).Forget();
         }
 
+        public void HideCells()
+        {
+            foreach (var cell in cells)
+            {
+                cell.Hide();
+            }
+        }
+
         private async UniTask ChangeAsync(MapCell newCell)
         {
             isBusy = true;
@@ -65,13 +80,23 @@ namespace Code
             newCell.UI.SetSelection(true);
             GameManager.Instance.HideUnits().Forget();
             currentCell.Hide();
-            await GameManager.Instance.MapController.HideAsync();
-            await UniTask.Delay(200);
+            if (!isHidden)
+            {
+                await GameManager.Instance.MapController.HideAsync();
+                await UniTask.Delay(100);
+            }
+
             await GameManager.Instance.MapController.ShowAsync();
+            isHidden = false;
             newCell.Show();
             currentCell = newCell;
             await GameManager.Instance.ShowUnits();
             isBusy = false;
+        }
+        
+        private void HideScroll()
+        {
+            GameManager.Instance.MapController.HideAsync().Forget();
         }
 
         private MapCell GetCell(Vector2Int position)

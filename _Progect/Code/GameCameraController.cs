@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Game.Scripts;
 using UnityEngine;
 
 namespace Code
@@ -10,28 +11,59 @@ namespace Code
         [SerializeField] private float speed = 1f;
         [SerializeField] private CameraSettings deckSettings;
         [SerializeField] private CameraSettings pcSettings;
+        
+        [SerializeField] private GameObject lookAtDeckTip;
+        [SerializeField] private GameObject lookAtPCTip;
 
-        private bool isLookAtDeck = true;
+        private bool isLookAtDeck = false;
         private bool isBusy = false;
+        
+        public bool IsLookAtDeck => isLookAtDeck;
 
         private void Update()
         {
-            if (isBusy)
+            GameManager.Instance.InteractionCursor.SetPointer(InteractionCursor.PointerType.Default);
+            lookAtDeckTip.SetActive(false);
+            lookAtPCTip.SetActive(false);
+
+            if (isBusy || !GameManager.Instance.IsPlaying)
                 return;
 
-            if (isLookAtDeck && Input.GetMouseButtonDown(0) && (Input.mousePosition.y > Screen.height * 0.9f))
+            lookAtDeckTip.SetActive(!isLookAtDeck);
+            lookAtPCTip.SetActive(isLookAtDeck);
+
+            if (isLookAtDeck && (Input.mousePosition.y > Screen.height * 0.9f))
             {
-                isLookAtDeck = false;
-                StartCoroutine(ChangeCameraSettings(pcSettings));
+                GameManager.Instance.InteractionCursor.SetPointer(InteractionCursor.PointerType.Up);
+                if (Input.GetMouseButtonDown(0))
+                {
+                    isLookAtDeck = false;
+                    StartCoroutine(ChangeCameraSettings(pcSettings));
+                }
             }
-            else if (!isLookAtDeck && Input.GetMouseButtonDown(0) && (Input.mousePosition.y < Screen.height * 0.1f))
+            else if (!isLookAtDeck && (Input.mousePosition.y < Screen.height * 0.1f))
             {
-                isLookAtDeck = true;
-                StartCoroutine(ChangeCameraSettings(deckSettings));
+                GameManager.Instance.InteractionCursor.SetPointer(InteractionCursor.PointerType.Down);
+                if (Input.GetMouseButtonDown(0))
+                {
+                    isLookAtDeck = true;
+                    StartCoroutine(ChangeCameraSettings(deckSettings));
+                }
             }
-        
         }
     
+        public void LookAtDeck()
+        {
+            isLookAtDeck = true;
+            StartCoroutine(ChangeCameraSettings(deckSettings));
+        }
+        
+        public void LookAtPC()
+        {
+            isLookAtDeck = false;
+            StartCoroutine(ChangeCameraSettings(pcSettings));
+        }
+
         private IEnumerator ChangeCameraSettings(CameraSettings settings)
         {
             isBusy = true;

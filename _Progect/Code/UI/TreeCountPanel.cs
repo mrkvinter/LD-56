@@ -28,7 +28,7 @@ namespace Code.UI
             }
             else
             {
-                additionalCountText.text = $"(+{GameManager.Instance.AdditionalTreeCount}s)";
+                additionalCountText.text = $"(+{GameManager.Instance.AdditionalTreeCount:0.0}s)";
             }
         }
     }

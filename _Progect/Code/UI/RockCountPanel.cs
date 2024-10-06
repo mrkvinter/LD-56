@@ -28,7 +28,7 @@ namespace Code.UI
             }
             else
             {
-                additionalCountText.text = $"(+{GameManager.Instance.AdditionalRockCount}s)";
+                additionalCountText.text = $"(+{GameManager.Instance.AdditionalRockCount:0.0}s)";
             }
         }
     }

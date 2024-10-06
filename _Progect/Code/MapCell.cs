@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Code.MapEntities;
@@ -14,13 +15,19 @@ namespace Code
         [SerializeField] private List<MapEntity> entities;
         [SerializeField] private List<BuildingEntity> buildingsToBuild;
 
+        private List<IMapCellExtension> extensions;
         public Vector2Int Position => position;
         public MapCellUI UI => ui;
         public bool IsActivated { get; private set; }
 
-        private void Start()
+        private void Awake()
         {
             CollectEntities();
+            extensions = GetComponents<IMapCellExtension>().ToList();
+        }
+
+        private void Start()
+        {
             foreach (var entity in entities)
             {
                 entity.ParentCell = this;
@@ -30,7 +37,8 @@ namespace Code
         [Button]
         public void CollectEntities()
         {
-            entities = new List<MapEntity>(GetComponentsInChildren<MapEntity>(true));
+            entities = new List<MapEntity>(GetComponentsInChildren<MapEntity>(true)
+                .Where(e => e is not Unit));
         }
 
         public void Hide()
@@ -40,10 +48,16 @@ namespace Code
             {
                 entity.HideEntity();
             }
-            
-            GameManager.Instance.BuildPanel.Hide();
+
+            foreach (var extension in extensions)
+            {
+                extension.IsActivated = false;
+                extension.OnHide();
+            }
+
+            UpdateBuildUI();
         }
-        
+
         public void HideInstantly()
         {
             IsActivated = false;
@@ -51,11 +65,18 @@ namespace Code
             {
                 entity.HideEntityInstantly();
             }
+
+            foreach (var extension in extensions)
+            {
+                extension.IsActivated = false;
+                extension.OnHide();
+            }
         }
 
         public void Show()
         {
             IsActivated = true;
+
             foreach (var entity in entities)
             {
                 if (entity is IBuilding { IsBuilt: false })
@@ -64,10 +85,36 @@ namespace Code
                 entity.ShowEntity();
             }
             
-            var building = buildingsToBuild.FirstOrDefault(e => !e.IsBuilt);
-            if (building != null)
+            foreach (var extension in extensions)
             {
-                GameManager.Instance.BuildPanel.SetBuilding(building, building.Build);
+                extension.IsActivated = true;
+                extension.OnShow();
+            }
+
+            UpdateBuildUI();
+        }
+
+        private void UpdateBuildUI()
+        {
+            if (IsActivated)
+            {
+                var building = buildingsToBuild.FirstOrDefault(e => !e.IsBuilt);
+                if (building != null)
+                {
+                    GameManager.Instance.BuildPanel.Set(building.Price, $"Build {building.Name}", false, () =>
+                    {
+                        building.Build();
+                        UpdateBuildUI();
+                    });
+                }
+                else
+                {
+                    GameManager.Instance.BuildPanel.Hide();
+                }
+            }
+            else
+            {
+                GameManager.Instance.BuildPanel.Hide();
             }
         }
     }

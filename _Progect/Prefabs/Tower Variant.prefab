@@ -414,9 +414,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6df2fdb960cf44e8be98de8a91b96517, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  messageTextPrefab: {fileID: 8930597526737146353}
+  messageTextParent: {fileID: 8459410459897993928}
+  health: 1000
+  healthText: {fileID: 6691433817230880303}
+--- !u!224 &8459410459897993928 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8298247998349528460, guid: e78ac3921745d3740b65ff4e67a5e852,
+    type: 3}
+  m_PrefabInstance: {fileID: 453896442714117956}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &8736658970658959805 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 9183483281542391545, guid: e78ac3921745d3740b65ff4e67a5e852,
+    type: 3}
+  m_PrefabInstance: {fileID: 453896442714117956}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8930597526737146353 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9053162460196865717, guid: e78ac3921745d3740b65ff4e67a5e852,
     type: 3}
   m_PrefabInstance: {fileID: 453896442714117956}
   m_PrefabAsset: {fileID: 0}

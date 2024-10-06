@@ -1,5 +1,6 @@
 using System;
 using Code.MapEntities;
+using KvinterGames;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,24 +10,35 @@ namespace Code.UI
     public class BuildPanel : MonoBehaviour
     {
         [SerializeField] private Transform buildPanel;
-        [SerializeField] private TMP_Text treePriceText;
-        [SerializeField] private TMP_Text rockPriceText;
-        [SerializeField] private TMP_Text wheatPriceText;
+        [SerializeField] private BuildPrice treePriceText;
+        [SerializeField] private BuildPrice rockPriceText;
+        [SerializeField] private BuildPrice wheatPriceText;
         [SerializeField] private TMP_Text buildButtonText;
         [SerializeField] private Button buildButton;
+        [SerializeField] private Transform notEnoughSpaceMessage;
         
-        public void SetBuilding(IBuilding building, Action onCLick)
+        public void Set(Price price, string title, bool needSpace, Action onCLick)
         {
-            treePriceText.text = building.TreeCount.ToString();
-            rockPriceText.text = building.RockCount.ToString();
-            wheatPriceText.text = building.WheatCount.ToString();
-            buildButtonText.text = building.IsBuilt ? "Upgrade" : "Build";
+            treePriceText.SetPrice(price.Tree, ResourceType.Tree);
+            rockPriceText.SetPrice(price.Rock, ResourceType.Rock);
+            wheatPriceText.SetPrice(price.Wheat, ResourceType.Wheat);
+            buildButtonText.text = title;
             buildButton.onClick.RemoveAllListeners();
             buildButton.onClick.AddListener(() =>
             {
+                SoundController.Instance.PlaySound("click", pitchRandomness: 0.1f, volume: 0.75f);
                 onCLick();
             });
             buildPanel.gameObject.SetActive(true);
+            
+            if (needSpace)
+            {
+                notEnoughSpaceMessage.gameObject.SetActive(GameManager.Instance.UnitCount >= GameManager.Instance.CreatureCapacity);
+            }
+            else
+            {
+                notEnoughSpaceMessage.gameObject.SetActive(false);
+            }
         }
         
         public void Hide()

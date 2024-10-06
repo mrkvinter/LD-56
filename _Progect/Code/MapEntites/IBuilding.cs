@@ -7,9 +7,11 @@ namespace Code.MapEntities
         Transform Transform { get; }
         Price Price { get; }
         bool IsBuilt { get; }
+        string Name { get; }
         int TreeCount { get; }
         int RockCount { get; }
         int WheatCount { get; }
+        int CreatureCapacity { get; }
         
         void Build();
     }

@@ -6,6 +6,7 @@ namespace Code.MapEntities
     {
         int Priority { get; }
         Transform Transform { get; }
+        bool IsAlive { get; }
         void Damage(int damage);
     }
 }

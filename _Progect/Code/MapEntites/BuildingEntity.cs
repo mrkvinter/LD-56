@@ -5,14 +5,17 @@ namespace Code.MapEntities
 {
     public abstract class BuildingEntity : MapEntity, IBuilding
     {
+        [SerializeField] private string name;
         [SerializeField] private Price price;
 
         public Transform Transform => transform;
+        public string Name => name;
         public Price Price => price;
         public bool IsBuilt { get; private set; }
         public virtual int TreeCount => 0;
         public virtual int RockCount => 0;
         public virtual int WheatCount => 0;
+        public virtual int CreatureCapacity => 0;
 
         public void Build()
         {

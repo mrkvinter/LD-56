@@ -28,7 +28,7 @@ namespace Code.UI
             }
             else
             {
-                additionalCountText.text = $"(+{GameManager.Instance.AdditionalWheatCount}s)";
+                additionalCountText.text = $"(+{GameManager.Instance.AdditionalWheatCount:0.0}s)";
             }
         }
     }

@@ -268,6 +268,16 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.45
       objectReference: {fileID: 0}
+    - target: {fileID: 9183483281542391545, guid: e78ac3921745d3740b65ff4e67a5e852,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.197
+      objectReference: {fileID: 0}
+    - target: {fileID: 9183483281542391545, guid: e78ac3921745d3740b65ff4e67a5e852,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.778
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -284,6 +294,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 7479767588850065201}
+    - targetCorrespondingSourceObject: {fileID: 6026846696095255877, guid: e78ac3921745d3740b65ff4e67a5e852,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5251067035643407839}
   m_SourcePrefab: {fileID: 100100000, guid: e78ac3921745d3740b65ff4e67a5e852, type: 3}
 --- !u!4 &4822484943285863793 stripped
 Transform:
@@ -323,8 +337,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   messageTextPrefab: {fileID: 5428943374967840092}
   messageTextParent: {fileID: 5034317261209130597}
+  name: Mill
   price:
-    Tree: 150
-    Rock: 75
+    Tree: 100
+    Rock: 50
     Wheat: 0
-  wheatCount: 5
+  wheatCount: 1
+--- !u!95 &5251067035643407839
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7302473913760093868}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 34fcbe14a75394241b4a20e6a039cdfa, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -10,10 +11,28 @@ namespace Code.MapEntities
         [SerializeField] private Transform messageTextParent;
         
         public MapCell ParentCell { get; set; }
+        
+        private bool wasRegistered;
 
         protected virtual void Start()
         {
-            GameManager.Instance.RegisterEntity(this);
+        }
+
+        protected void OnEnable()
+        {
+            if (!wasRegistered)
+            {
+                GameManager.Instance.RegisterEntity(this);
+                wasRegistered = true;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (wasRegistered)
+            {
+                GameManager.Instance.UnregisterEntity(this);
+            }
         }
 
         protected void ShowMessage(string message)
@@ -31,15 +50,15 @@ namespace Code.MapEntities
         {
         }
         
-        public void ShowEntity()
+        public virtual void ShowEntity()
         {
             gameObject.SetActive(true);
-            transform.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutBack);
+            transform.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutBack);
         }
         
-        public void HideEntity()
+        public virtual void HideEntity()
         {
-            transform.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack).OnComplete(() => gameObject.SetActive(false));
+            transform.DOScale(Vector3.zero, 0.15f).SetEase(Ease.InBack).OnComplete(() => gameObject.SetActive(false));
         }
         
         public void HideEntityInstantly()

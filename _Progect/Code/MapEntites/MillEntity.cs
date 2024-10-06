@@ -16,7 +16,7 @@ namespace Code.MapEntities
                 return;
 
             timer += Time.deltaTime;
-            if (timer >= 1)
+            if (timer >= 2)
             {
                 timer = 0;
                 GameManager.Instance.AddWheat(wheatCount);
@@ -25,3 +25,5 @@ namespace Code.MapEntities
         }
     }
 }
+    
+    

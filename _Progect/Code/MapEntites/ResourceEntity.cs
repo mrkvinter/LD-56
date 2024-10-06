@@ -1,4 +1,5 @@
 ﻿using DG.Tweening;
+using KvinterGames;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -34,6 +35,7 @@ namespace Code.MapEntities
 
         public void Collect(int count)
         {
+            SoundController.Instance.PlaySound("click", pitchRandomness: 0.2f, volume: 0.75f);
             Add(count);
         }
         
