@@ -10,7 +10,7 @@ namespace Code.UI
         [SerializeField] private Color notEnoughColor;
 
         private ResourceType resourceType;
-        
+
         public void SetPrice(int price, ResourceType resourceType)
         {
             gameObject.SetActive(price != 0);
@@ -22,16 +22,30 @@ namespace Code.UI
         {
             if (resourceType == ResourceType.Tree)
             {
-                treePriceText.color = GameManager.Instance.TreeCount >= int.Parse(treePriceText.text) ? enoughColor : notEnoughColor;
+                treePriceText.color = GameManager.Instance.TreeCount >= int.Parse(treePriceText.text)
+                    ? enoughColor
+                    : notEnoughColor;
             }
             else if (resourceType == ResourceType.Rock)
             {
-                treePriceText.color = GameManager.Instance.RockCount >= int.Parse(treePriceText.text) ? enoughColor : notEnoughColor;
+                treePriceText.color = GameManager.Instance.RockCount >= int.Parse(treePriceText.text)
+                    ? enoughColor
+                    : notEnoughColor;
             }
             else if (resourceType == ResourceType.Wheat)
             {
-                treePriceText.color = GameManager.Instance.WheatCount >= int.Parse(treePriceText.text) ? enoughColor : notEnoughColor;
+                treePriceText.color = GameManager.Instance.WheatCount >= int.Parse(treePriceText.text)
+                    ? enoughColor
+                    : notEnoughColor;
             }
         }
+
+        public bool IsEnough() => resourceType switch
+        {
+            ResourceType.Tree => GameManager.Instance.TreeCount >= int.Parse(treePriceText.text),
+            ResourceType.Rock => GameManager.Instance.RockCount >= int.Parse(treePriceText.text),
+            ResourceType.Wheat => GameManager.Instance.WheatCount >= int.Parse(treePriceText.text),
+            _ => false
+        };
     }
 }

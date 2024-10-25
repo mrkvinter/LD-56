@@ -20,7 +20,7 @@ namespace Code.MapEntities
             {
                 timer = 0;
                 GameManager.Instance.AddTree(woodCount);
-                ShowMessage($"+{woodCount}");
+                ShowMessage($"+{woodCount}", 1);
             }
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Code.MapEntities;
 using DG.Tweening;
+using GameAnalyticsSDK;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,15 +20,20 @@ namespace Code
     {
         [SerializeField] private List<Wave> waves;
         [SerializeField] private Slider waveSlider;
+        [SerializeField] private Slider waveSlider2;
         [SerializeField] private Price creaturePrice;
         [SerializeField] private Price knightPrice;
         [SerializeField] private Transform creaturesRoot;
         [SerializeField] private Unit unitPrefab;
         [SerializeField] private Unit knightPrefab;
         [SerializeField] private TMP_Text waveNumberText;
+        [SerializeField] private TMP_Text waveNumberText2;
 
         private int currentWaveIndex;
         private float waveTimer;
+        
+        private bool isResting;
+        private float restTimer;
 
         public bool IsActivated { get; set; }
 
@@ -44,11 +50,25 @@ namespace Code
                 }
                 return;
             }
-            waveTimer += Time.deltaTime;
+            
+            if (isResting && !GameManager.Instance.HasActiveEnemy)
+            {
+                restTimer += Time.deltaTime;
+                if (restTimer >= 5)
+                {
+                    isResting = false;
+                    restTimer = 0;
+                }
+            }
+            
+            if (GameManager.Instance.IsCollectingStarted && !isResting)
+                waveTimer += Time.deltaTime;
+    
             if (waveTimer >= waves[currentWaveIndex].delay)
             {
                 waveTimer = 0;
                 waves[currentWaveIndex].waveRoot.Activate();
+                isResting = true;
                 // foreach (var unit in waves[currentWaveIndex].units)
                 // {
                 //     unit.gameObject.SetActive(true);
@@ -57,9 +77,11 @@ namespace Code
                 // }
 
                 currentWaveIndex++;
+                GameAnalytics.NewDesignEvent($"Game:Complete:Wave_{currentWaveIndex}");
             }
 
             waveSlider.value = waveTimer / waves[currentWaveIndex].delay;
+            waveSlider2.value = waveTimer / waves[currentWaveIndex].delay;
 
             UpdateUI();
         }
@@ -83,7 +105,17 @@ namespace Code
 
         private void UpdateUI()
         {
-            waveNumberText.text = $"{currentWaveIndex + 1}/{waves.Count}";
+            if (currentWaveIndex >= waves.Count)
+            {
+                waveNumberText.text = "Last wave";
+                waveNumberText2.text = "Last wave";
+            }
+            else
+            {
+                waveNumberText.text = $"{currentWaveIndex + 1}/{waves.Count}";
+                waveNumberText2.text = $"{currentWaveIndex + 1}/{waves.Count}";
+            }
+
             GameManager.Instance.CreateCreaturePanel.Set(creaturePrice, "Create creature", true, CreateUnit);
             GameManager.Instance.CreateKnightCreaturePanel.Set(knightPrice, "Create knight", true, CreateKnight);
         }

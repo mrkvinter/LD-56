@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Code.MapEntities;
 using Code.UI;
 using Sirenix.OdinInspector;
+using TMPro;
 using UnityEngine;
 
 namespace Code
@@ -14,6 +16,10 @@ namespace Code
         [SerializeField] private MapCellUI ui;
         [SerializeField] private List<MapEntity> entities;
         [SerializeField] private List<BuildingEntity> buildingsToBuild;
+        
+        [SerializeField] private Transform priceRoot;
+        [SerializeField] private TMP_Text treeCountText;
+        [SerializeField] private TMP_Text rockCountText;
 
         private List<IMapCellExtension> extensions;
         public Vector2Int Position => position;
@@ -32,6 +38,8 @@ namespace Code
             {
                 entity.ParentCell = this;
             }
+            
+            UpdateBuildUI();
         }
 
         [Button]
@@ -106,9 +114,23 @@ namespace Code
                         building.Build();
                         UpdateBuildUI();
                     });
+                    
+                    if (treeCountText != null)
+                    {
+                        treeCountText.text = building.Price.Tree.ToString();
+                    }
+                    
+                    if (rockCountText != null)
+                    {
+                        rockCountText.text = building.Price.Rock.ToString();
+                    }
                 }
                 else
                 {
+                    if (priceRoot != null)
+                    {
+                        priceRoot.gameObject.SetActive(false);
+                    }
                     GameManager.Instance.BuildPanel.Hide();
                 }
             }

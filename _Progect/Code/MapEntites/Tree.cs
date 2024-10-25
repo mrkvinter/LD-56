@@ -2,7 +2,7 @@
 {
     public class Tree : ResourceEntity
     {
-        protected override void AddResource(int count)
+        protected override void AddResource(float count)
         {
             GameManager.Instance.AddTree(count);
         }

@@ -37,28 +37,43 @@ namespace Code
             if (isBusy || GameManager.Instance.GameCameraController.IsLookAtDeck || !GameManager.Instance.IsPlaying)
                 return;
 
-            if (Input.GetKeyDown(KeyCode.W))
-            {
-                Move(Vector2Int.down);
-            }
-            else if (Input.GetKeyDown(KeyCode.S))
-            {
-                Move(Vector2Int.up);
-            }
-            else if (Input.GetKeyDown(KeyCode.A))
-            {
-                Move(Vector2Int.left);
-            }
-            else if (Input.GetKeyDown(KeyCode.D))
-            {
-                Move(Vector2Int.right);
-            }
+            // if (Input.GetKeyDown(KeyCode.W))
+            // {
+            //     Move(Vector2Int.down);
+            // }
+            // else if (Input.GetKeyDown(KeyCode.S))
+            // {
+            //     Move(Vector2Int.up);
+            // }
+            // else if (Input.GetKeyDown(KeyCode.A))
+            // {
+            //     Move(Vector2Int.left);
+            // }
+            // else if (Input.GetKeyDown(KeyCode.D))
+            // {
+            //     Move(Vector2Int.right);
+            // }
         }
 
-        private void Move(Vector2Int direction)
+        public void Move(Vector2Int direction)
         {
+            if (isBusy)
+                return;
+
             var newCellPosition = currentCell.Position + direction;
             var newCell = GetCell(newCellPosition);
+            if (newCell == null)
+                return;
+
+            ChangeAsync(newCell).Forget();
+        }
+        
+        public void MoveToCell(Vector2Int position)
+        {
+            if (isBusy)
+                return;
+
+            var newCell = GetCell(position);
             if (newCell == null)
                 return;
 

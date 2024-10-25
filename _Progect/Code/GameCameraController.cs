@@ -32,6 +32,20 @@ namespace Code
             lookAtDeckTip.SetActive(!isLookAtDeck);
             lookAtPCTip.SetActive(isLookAtDeck);
 
+            if (isLookAtDeck && Input.GetKeyDown(KeyCode.W))
+            {
+                isLookAtDeck = false;
+                StartCoroutine(ChangeCameraSettings(pcSettings));
+                return;
+            }
+
+            if (!isLookAtDeck && Input.GetKeyDown(KeyCode.S))
+            {
+                isLookAtDeck = true;
+                StartCoroutine(ChangeCameraSettings(deckSettings));
+                return;
+            }
+
             if (isLookAtDeck && (Input.mousePosition.y > Screen.height * 0.9f))
             {
                 GameManager.Instance.InteractionCursor.SetPointer(InteractionCursor.PointerType.Up);

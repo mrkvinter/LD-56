@@ -157,5 +157,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   messageTextPrefab: {fileID: 6639950480929868441}
   messageTextParent: {fileID: 5958209617901486496}
-  cooldown: 0.25
+  radius: 0.15
+  cooldown: 0
   visual: {fileID: 6169443810180862644}

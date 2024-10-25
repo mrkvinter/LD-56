@@ -6,8 +6,10 @@ using Code.UI;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Game.Scripts;
+using GameAnalyticsSDK;
 using KvinterGames;
 using Sirenix.OdinInspector;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -53,6 +55,8 @@ namespace Code
         [SerializeField] private Transform mainMenu;
 
         [SerializeField] private Transform gameUI;
+        [SerializeField] private Transform gameTower;
+        [SerializeField] private Transform gameBuilding;
         [SerializeField] private Transform gameOver;
         [SerializeField] private Transform winMenu;
         
@@ -62,12 +66,14 @@ namespace Code
         [SerializeField] private Map map;
         [SerializeField] private GameCameraController gameCameraController;
         [SerializeField] private Transform messageHasEnemy;
+        
+        [SerializeField] private TMP_Text debugText;
 
         private bool isTreeCell;
 
-        public event Action<int> OnTreeCountChanged;
-        public event Action<int> OnRockCountChanged;
-        public event Action<int> OnWheatCountChanged;
+        public event Action<float> OnTreeCountChanged;
+        public event Action<float> OnRockCountChanged;
+        public event Action<float> OnWheatCountChanged;
         public event Action<int> OnUnitCountChanged;
         public event Action<int> OnCreatureCapacityChanged;
 
@@ -76,9 +82,12 @@ namespace Code
         public BuildPanel BuildPanel => buildPanel;
         public BuildPanel CreateCreaturePanel => createCreaturePanel;
         public BuildPanel CreateKnightCreaturePanel => createKnightCreaturePanel;
-        public int TreeCount { get; private set; } = 0;
-        public int RockCount { get; private set; } = 0;
-        public int WheatCount { get; private set; } = 0;
+        public float TreeCount { get; private set; } = 0;
+        public float RockCount { get; private set; } = 0;
+        public float WheatCount { get; private set; } = 15;
+        public float AllGameTreeCount { get; private set; } = 0;
+        public float AllGameRockCount { get; private set; } = 0;
+        public float AllGameWheatCount { get; private set; } = 15;
         public int CreatureCapacity => 3 + Buildings.Where(e => e.IsBuilt).Sum(e => e.CreatureCapacity);
 
         public float AdditionalTreeCount => Buildings.Where(e => e.IsBuilt).Sum(e => e.TreeCount / 2f);
@@ -97,12 +106,30 @@ namespace Code
         public List<IEnemyTarget> EnemyTarget { get; } = new();
         public List<IBuilding> Buildings { get; } = new();
         public int UnitCount => units.Count;
+        public bool IsCollectingStarted => (AllGameTreeCount - originalTreeCount) + (AllGameRockCount - originalRockCount) + (AllGameWheatCount - originalWheatCount) > 5;
         public bool IsPlaying { get; private set; }
         
         private SoundController.LoopSound music;
+        
+        private float previousTreeCount;
+        private float previousRockCount;
+        private float previousWheatCount;
+        private float timer;
+        
+        private float originalTreeCount;
+        private float originalRockCount;
+        private float originalWheatCount;
+        
+        private float[] speedGame = {1, 2, 4};
+        private int speedGameIndex = 0;
 
         private void Start()
         {
+            GameAnalytics.Initialize();
+            originalTreeCount = previousTreeCount = AllGameTreeCount = TreeCount;
+            originalRockCount = previousRockCount = AllGameRockCount = RockCount;
+            originalWheatCount = previousWheatCount = AllGameWheatCount = WheatCount;
+            
             startButton.onClick.AddListener(StartGame);
             restartButton.onClick.AddListener(RestartGame);
 
@@ -115,6 +142,8 @@ namespace Code
             SoundController.Instance.PlaySound("click", pitchRandomness: 0.1f);
             mainMenu.gameObject.SetActive(false);
             gameUI.gameObject.SetActive(true);
+            gameTower.gameObject.SetActive(true);
+            gameBuilding.gameObject.SetActive(true);
             map.ShowStartCell();
             IsPlaying = true;
         }
@@ -128,24 +157,30 @@ namespace Code
         
         public void GameOver()
         {
+            GameAnalytics.NewDesignEvent("GameOver");
             if (gameCameraController.IsLookAtDeck)
             {
                 gameCameraController.LookAtPC();
             }
             map.HideCells();
             gameUI.gameObject.SetActive(false);
+            gameTower.gameObject.SetActive(false);
+            gameBuilding.gameObject.SetActive(false);
             gameOver.gameObject.SetActive(true);
             IsPlaying = false;
         }
         
         public void Win()
         {
+            GameAnalytics.NewDesignEvent("Win");
             if (gameCameraController.IsLookAtDeck)
             {
                 gameCameraController.LookAtPC();
             }
             map.HideCells();
             gameUI.gameObject.SetActive(false);
+            gameTower.gameObject.SetActive(false);
+            gameBuilding.gameObject.SetActive(false);
             winMenu.gameObject.SetActive(true);
             IsPlaying = false;
         }
@@ -157,11 +192,43 @@ namespace Code
             {
                 entity.Tick();
             }
+            
+            OnCreatureCapacityChanged?.Invoke(CreatureCapacity);
+            
+            if (Input.GetKeyDown(KeyCode.F2))
+            {
+                speedGameIndex = (speedGameIndex + 1) % speedGame.Length;
+                Time.timeScale = speedGame[speedGameIndex];
+            }
+
+            var treeAtSecond = (TreeCount - previousTreeCount); 
+            var rockAtSecond = (RockCount - previousRockCount);
+            var wheatAtSecond = (WheatCount - previousWheatCount);
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine($"Speed: {Time.timeScale}x");
+            sb.AppendLine($"Tree: {TreeCount} (+{treeAtSecond:F2}/s)");
+            sb.AppendLine($"Rock: {RockCount} (+{rockAtSecond:F2}/s)");
+            sb.AppendLine($"Wheat: {WheatCount} (+{wheatAtSecond:F2}/s)");
+            debugText.text = sb.ToString();
+            
+            timer += Time.deltaTime;
+            if (timer >= 1)
+            {
+                previousTreeCount = TreeCount;
+                previousRockCount = RockCount;
+                previousWheatCount = WheatCount;
+                timer = 0;
+            }
         }
 
-        public void AddTree(int count)
+        public void AddTree(float count)
         {
             TreeCount += count;
+            if (count > 0)
+            {
+                AllGameTreeCount += count;
+            }
+
             OnTreeCountChanged?.Invoke(TreeCount);
         }
 
@@ -192,15 +259,25 @@ namespace Code
             }
         }
 
-        public void AddRock(int count)
+        public void AddRock(float count)
         {
             RockCount += count;
+            if (count > 0)
+            {
+                AllGameRockCount += count;
+            }
+
             OnRockCountChanged?.Invoke(RockCount);
         }
 
-        public void AddWheat(int count)
+        public void AddWheat(float count)
         {
             WheatCount += count;
+            if (count > 0)
+            {
+                AllGameWheatCount += count;
+            }
+
             OnWheatCountChanged?.Invoke(WheatCount);
         }
 

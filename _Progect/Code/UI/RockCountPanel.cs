@@ -14,14 +14,14 @@ namespace Code.UI
             UpdateUI();
         }
 
-        private void OnRockCountChanged(int count)
+        private void OnRockCountChanged(float count)
         {
             UpdateUI();
         }
 
         private void UpdateUI()
         {
-            rockCountText.text = GameManager.Instance.RockCount.ToString();
+            rockCountText.text = $"{GameManager.Instance.RockCount:0.0}";
             if (GameManager.Instance.AdditionalRockCount == 0)
             {
                 additionalCountText.text = "";

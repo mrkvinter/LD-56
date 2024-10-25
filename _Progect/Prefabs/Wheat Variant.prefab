@@ -176,6 +176,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 464942052073596251, guid: e78ac3921745d3740b65ff4e67a5e852,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 0.19
+      objectReference: {fileID: 0}
+    - target: {fileID: 464942052073596251, guid: e78ac3921745d3740b65ff4e67a5e852,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 0.19
+      objectReference: {fileID: 0}
+    - target: {fileID: 464942052073596251, guid: e78ac3921745d3740b65ff4e67a5e852,
+        type: 3}
+      propertyPath: m_Center.y
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 1432857541881079105, guid: e78ac3921745d3740b65ff4e67a5e852,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -308,5 +323,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   messageTextPrefab: {fileID: 5595853333600358794}
   messageTextParent: {fileID: 4837553372371917491}
-  cooldown: 0.25
+  radius: 0.1
+  cooldown: 0
   visual: {fileID: 4905516518516525479}

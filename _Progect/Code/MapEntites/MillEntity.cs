@@ -20,7 +20,7 @@ namespace Code.MapEntities
             {
                 timer = 0;
                 GameManager.Instance.AddWheat(wheatCount);
-                ShowMessage($"+{wheatCount}");
+                ShowMessage($"+{wheatCount}", 1);
             }
         }
     }

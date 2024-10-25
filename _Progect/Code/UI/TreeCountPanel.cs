@@ -14,14 +14,14 @@ namespace Code.UI
             UpdateUI();
         }
 
-        private void OnTreeCountChanged(int count)
+        private void OnTreeCountChanged(float count)
         {
             UpdateUI();
         }
 
         private void UpdateUI()
         {
-            treeCountText.text = GameManager.Instance.TreeCount.ToString();
+            treeCountText.text = $"{GameManager.Instance.TreeCount:0.0}";
             if (GameManager.Instance.AdditionalTreeCount == 0)
             {
                 additionalCountText.text = "";

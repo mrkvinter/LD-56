@@ -12,6 +12,10 @@ namespace Code.MapEntities
 
         private float lastClickTime;
         private Tweener animTask;
+        private float lastTime;
+        private float collected;
+        // сколько ресурсов собирается за 1 секунду
+        private float collectRate = 1f;
 
         public Transform Transform => transform;
 
@@ -21,13 +25,20 @@ namespace Code.MapEntities
                 return;
 
             lastClickTime = Time.time;
-            Add(1);
+            Add(0.15f);
         }
 
-        private void Add(int count)
+        private void Add(float count)
         {
+            if (Time.time - lastTime > 1)
+            {
+                collected = 0;
+            }
+
+            lastTime = Time.time;
+            collected += count;
             AddResource(count);
-            ShowMessage($"+{count}");
+            ShowMessage($"+{collected:0.0}", 1 + 1f * (collected / 10f)); 
 
             if (!animTask.IsActive())
                 animTask = visual.DOPunchScale(Vector3.one * 0.05f, 0.5f);
@@ -39,6 +50,6 @@ namespace Code.MapEntities
             Add(count);
         }
         
-        protected abstract void AddResource(int count);
+        protected abstract void AddResource(float count);
     }
 }

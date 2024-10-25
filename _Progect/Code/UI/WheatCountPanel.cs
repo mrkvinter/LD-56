@@ -1,3 +1,4 @@
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 
@@ -14,14 +15,14 @@ namespace Code.UI
             UpdateUI();
         }
 
-        private void OnWheatCountChanged(int count)
+        private void OnWheatCountChanged(float count)
         {
             UpdateUI();
         }
 
         private void UpdateUI()
         {
-            wheatCountText.text = GameManager.Instance.WheatCount.ToString();
+            wheatCountText.text = $"{GameManager.Instance.WheatCount:0.0}";
             if (GameManager.Instance.AdditionalWheatCount == 0)
             {
                 additionalCountText.text = "";

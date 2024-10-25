@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Animancer;
+using DG.Tweening;
 using KvinterGames;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 namespace Code.MapEntities
@@ -19,6 +21,8 @@ namespace Code.MapEntities
         [SerializeField] private int damage = 1;
         [SerializeField] private int health = 1;
         [SerializeField] private TMP_Text healthText;
+        [SerializeField] private Image hpPanel;
+        [SerializeField] private Color damageColor;
         
         [Space]
         [SerializeField] private AnimancerComponent animancer;
@@ -33,13 +37,17 @@ namespace Code.MapEntities
         private float lastCollectTime;
         private float idleTime;
         private Vector3? walkingTarget;
+        private Color originalColor;
+        private float radius;
         // private Vector3 position;
+        private bool isFirstActivation = true;
 
         public bool IsEnemy => isEnemy;
 
         private void Awake()
         {
             // position = transform.position;
+            originalColor = hpPanel.color;
             UpdateHealthText();
         }
 
@@ -55,6 +63,16 @@ namespace Code.MapEntities
             {
                 Collect();
                 return;
+            }
+
+            if (isFirstActivation)
+            {
+                isFirstActivation = false;
+                if (isEnemy)
+                {
+                    state = State.Walking;
+                    idleTime = Random.Range(-5f, -3f);
+                }
             }
 
             switch (state)
@@ -143,6 +161,7 @@ namespace Code.MapEntities
         private void Move()
         {
             Vector3 direction;
+            float radius;
             if (isEnemy)
             {
                 if (targetEnemyTarget == null || !targetEnemyTarget.IsAlive)
@@ -151,6 +170,7 @@ namespace Code.MapEntities
                     animancer.Play(move);
                     return;
                 }
+                radius = targetEnemyTarget.Radius;
                 direction = targetEnemyTarget.Transform.position - transform.position;
             }
             else
@@ -163,6 +183,7 @@ namespace Code.MapEntities
                         state = State.Walking;
                         return;
                     }
+                    radius = targetEnemyTarget.Radius;
                     direction = targetEnemyTarget.Transform.position - transform.position;
                 }
                 else if (targetResource == null)
@@ -172,9 +193,12 @@ namespace Code.MapEntities
                     return;
                 }
                 else
+                {
+                    radius = targetResource.Radius;
                     direction = targetResource.Transform.position - transform.position;
+                }
             }
-            var distance = direction.magnitude;
+            var distance = direction.magnitude - radius;
             if (distance < collectDistance)
             {
                 state = State.Collect;
@@ -335,6 +359,9 @@ namespace Code.MapEntities
             if (!IsAlive)
                 return;
 
+            hpPanel.DOKill();
+            hpPanel.color = damageColor;
+            hpPanel.DOColor(originalColor, 0.5f).SetEase(Ease.InSine);
             SoundController.Instance.PlaySound("hit", pitchRandomness: 0.1f);
             health -= damage;
             health = Math.Max(health, 0);

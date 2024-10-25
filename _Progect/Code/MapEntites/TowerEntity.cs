@@ -17,9 +17,12 @@ namespace Code.MapEntities
         public int Priority => 1;
         public Transform Transform => transform;
         public bool IsAlive => health > 0;
+        public int MaxHealth { get; private set; }
+        public int Health => health;
 
         private void Awake()
         {
+            MaxHealth = health;
             healthText.text = health.ToString();
             healthTextUI.text = health.ToString();
         }
@@ -33,11 +36,7 @@ namespace Code.MapEntities
 
         public override void Tick()
         {
-            SetMessageVisible(false);
-            if (Time.time - lastDamageTime < 5) //15, 5
-            {
-                SetMessageVisible(true);
-            }
+            SetMessageVisible(GameManager.Instance.HasActiveEnemy);
         }
 
         private void SetMessageVisible(bool visible)
