@@ -125,6 +125,24 @@ namespace Code
         private float[] speedGame = { 1, 2, 4 };
         private int speedGameIndex = 0;
 
+        void OnEnable()
+        {
+            Application.logMessageReceived += HandleLog;
+        }
+
+        void OnDisable()
+        {
+            Application.logMessageReceived -= HandleLog;
+        }
+        
+        void HandleLog(string logString, string stackTrace, LogType type)
+        {
+            if (type == LogType.Exception)
+            {
+                GameAnalytics.NewErrorEvent(GAErrorSeverity.Critical, logString + "\n" + stackTrace);
+            }
+        }
+        
         private void Start()
         {
             GameAnalytics.Initialize();
