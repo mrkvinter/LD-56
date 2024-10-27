@@ -46,6 +46,9 @@ namespace Code.MapEntities
 
         protected void ShowMessage(string message, float size)
         {
+            if (messageTextPrefab == null)
+                return;
+
             if (messageData != null)
             {
                 messageData.CanvasGroup.alpha = 1;

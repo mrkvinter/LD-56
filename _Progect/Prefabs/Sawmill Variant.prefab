@@ -344,14 +344,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42794ee884764706b4049d935019ce25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  messageTextPrefab: {fileID: 0}
+  messageTextPrefab: {fileID: 7271946221109852658}
   messageTextParent: {fileID: 7665446881570910923}
+  radius: 0
   name: Sawmill
   price:
     Tree: 80
     Rock: 40
     Wheat: 0
   woodCount: 1
+--- !u!1 &7271946221109852658 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9053162460196865717, guid: e78ac3921745d3740b65ff4e67a5e852,
+    type: 3}
+  m_PrefabInstance: {fileID: 1821828945248567111}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &7665446881570910923 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8298247998349528460, guid: e78ac3921745d3740b65ff4e67a5e852,
