@@ -51,22 +51,21 @@ namespace Code
         [SerializeField] private BuildPanel createCreaturePanel;
         [SerializeField] private BuildPanel createKnightCreaturePanel;
         [SerializeField] private BoxCollider mapCollider;
-        [Space] 
-        [SerializeField] private Transform mainMenu;
+        [Space] [SerializeField] private Transform mainMenu;
 
         [SerializeField] private Transform gameUI;
         [SerializeField] private Transform gameTower;
         [SerializeField] private Transform gameBuilding;
         [SerializeField] private Transform gameOver;
         [SerializeField] private Transform winMenu;
-        
+
         [SerializeField] private Button startButton;
         [SerializeField] private Button restartButton;
 
         [SerializeField] private Map map;
         [SerializeField] private GameCameraController gameCameraController;
         [SerializeField] private Transform messageHasEnemy;
-        
+
         [SerializeField] private TMP_Text debugText;
 
         private bool isTreeCell;
@@ -93,7 +92,7 @@ namespace Code
         public float AdditionalTreeCount => Buildings.Where(e => e.IsBuilt).Sum(e => e.TreeCount / 2f);
         public float AdditionalRockCount => Buildings.Where(e => e.IsBuilt).Sum(e => e.RockCount / 2f);
         public float AdditionalWheatCount => Buildings.Where(e => e.IsBuilt).Sum(e => e.WheatCount / 2f);
-        
+
         public bool HasActiveEnemy => Entities.OfType<Unit>().Any(e => e.IsEnemy && e.IsActivated);
 
         public MapController MapController => mapController;
@@ -106,21 +105,24 @@ namespace Code
         public List<IEnemyTarget> EnemyTarget { get; } = new();
         public List<IBuilding> Buildings { get; } = new();
         public int UnitCount => units.Count;
-        public bool IsCollectingStarted => (AllGameTreeCount - originalTreeCount) + (AllGameRockCount - originalRockCount) + (AllGameWheatCount - originalWheatCount) > 5;
+
+        public bool IsCollectingStarted => (AllGameTreeCount - originalTreeCount) +
+            (AllGameRockCount - originalRockCount) + (AllGameWheatCount - originalWheatCount) > 5;
+
         public bool IsPlaying { get; private set; }
-        
+
         private SoundController.LoopSound music;
-        
+
         private float previousTreeCount;
         private float previousRockCount;
         private float previousWheatCount;
         private float timer;
-        
+
         private float originalTreeCount;
         private float originalRockCount;
         private float originalWheatCount;
-        
-        private float[] speedGame = {1, 2, 4};
+
+        private float[] speedGame = { 1, 2, 4 };
         private int speedGameIndex = 0;
 
         private void Start()
@@ -129,14 +131,14 @@ namespace Code
             originalTreeCount = previousTreeCount = AllGameTreeCount = TreeCount;
             originalRockCount = previousRockCount = AllGameRockCount = RockCount;
             originalWheatCount = previousWheatCount = AllGameWheatCount = WheatCount;
-            
+
             startButton.onClick.AddListener(StartGame);
             restartButton.onClick.AddListener(RestartGame);
 
             music = SoundController.Instance.PlayLoop("music");
             music.AudioSource.volume = 0.35f;
         }
-        
+
         private void StartGame()
         {
             SoundController.Instance.PlaySound("click", pitchRandomness: 0.1f);
@@ -147,14 +149,14 @@ namespace Code
             map.ShowStartCell();
             IsPlaying = true;
         }
-        
-        private void RestartGame() => UniTask.Create(async  () => 
+
+        private void RestartGame() => UniTask.Create(async () =>
         {
             music.AudioSource.DOFade(0, 0.5f);
             await UniTask.Delay(500);
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         });
-        
+
         public void GameOver()
         {
             GameAnalytics.NewDesignEvent("GameOver");
@@ -162,6 +164,7 @@ namespace Code
             {
                 gameCameraController.LookAtPC();
             }
+
             map.HideCells();
             gameUI.gameObject.SetActive(false);
             gameTower.gameObject.SetActive(false);
@@ -169,7 +172,7 @@ namespace Code
             gameOver.gameObject.SetActive(true);
             IsPlaying = false;
         }
-        
+
         public void Win()
         {
             GameAnalytics.NewDesignEvent("Win");
@@ -177,6 +180,7 @@ namespace Code
             {
                 gameCameraController.LookAtPC();
             }
+
             map.HideCells();
             gameUI.gameObject.SetActive(false);
             gameTower.gameObject.SetActive(false);
@@ -192,16 +196,18 @@ namespace Code
             {
                 entity.Tick();
             }
-            
+
             OnCreatureCapacityChanged?.Invoke(CreatureCapacity);
-            
+
+#if UNITY_EDITOR
             if (Input.GetKeyDown(KeyCode.F2))
             {
                 speedGameIndex = (speedGameIndex + 1) % speedGame.Length;
                 Time.timeScale = speedGame[speedGameIndex];
             }
+#endif
 
-            var treeAtSecond = (TreeCount - previousTreeCount); 
+            var treeAtSecond = (TreeCount - previousTreeCount);
             var rockAtSecond = (RockCount - previousRockCount);
             var wheatAtSecond = (WheatCount - previousWheatCount);
             var sb = new System.Text.StringBuilder();
@@ -210,7 +216,7 @@ namespace Code
             sb.AppendLine($"Rock: {RockCount} (+{rockAtSecond:F2}/s)");
             sb.AppendLine($"Wheat: {WheatCount} (+{wheatAtSecond:F2}/s)");
             debugText.text = sb.ToString();
-            
+
             timer += Time.deltaTime;
             if (timer >= 1)
             {
@@ -248,6 +254,7 @@ namespace Code
                         units.Add(unit);
                         OnUnitCountChanged?.Invoke(units.Count);
                     }
+
                     break;
                 case IBuilding building:
                     Buildings.Add(building);
@@ -255,6 +262,7 @@ namespace Code
                     {
                         OnCreatureCapacityChanged?.Invoke(CreatureCapacity);
                     }
+
                     break;
             }
         }
@@ -321,6 +329,7 @@ namespace Code
                         units.Remove(unit);
                         OnUnitCountChanged?.Invoke(units.Count);
                     }
+
                     break;
                 case IBuilding building:
                     Buildings.Remove(building);
@@ -328,6 +337,7 @@ namespace Code
                     {
                         OnCreatureCapacityChanged?.Invoke(CreatureCapacity);
                     }
+
                     break;
             }
         }
